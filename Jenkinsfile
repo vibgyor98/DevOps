@@ -65,7 +65,7 @@ pipeline {
         stage('Build Docker-Image') {
             steps {
                 script {
-                    dockerImage = docker.build registry
+                    dockerImage = docker.build registry + ':$BUILD_NUMBER'
                 }
             }
         }
@@ -76,12 +76,6 @@ pipeline {
                         dockerImage.push()
                     }
                 }
-            }
-        }
-        stage('Stop Container') {
-            steps {
-                sh 'docker ps -f name=assignment04 -q | xargs --no-run-if-empty docker container stop'
-                sh 'docker container ls -a -fname=assignment04 -q | xargs -r docker container rm'
             }
         }
         stage('Run Container') {
