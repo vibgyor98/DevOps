@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    environment {
+        dockerImage = ''
+        registry = 'souravkar/assignment04'
+        registryCredential = 'Docker-Credential'
+    }
     tools {
         maven "Maven"
     }
@@ -57,19 +62,33 @@ pipeline {
                 )
             }
         } 
-        stage('Build Image'){
+        stage('Build Docker-Image') {
             steps {
-                bat "docker build -t souravkar/assignment04:${BUILD_NUMBER} ."
+                script {
+                    dockerImage = docker.build registry
+                }
             }
         }
-        stage('Push Image') {
+        stage('Upload Image') {
             steps {
-
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
             }
         }
-        stage('Docker Deployment'){
-            steps{
-                bat "docker run --name souravkar/assignment04 -d -p 8080:3000 souravkar/assignment04:${BUILD_NUMBER}"
+        stage('Stop Container') {
+            steps {
+                sh 'docker ps -f name=assignment04 -q | xargs --no-run-if-empty docker container stop'
+                sh 'docker container ls -a -fname=assignment04 -q | xargs -r docker container rm'
+            }
+        }
+        stage('Run Container') {
+            steps {
+                script {
+                    dockerImage.run("-p 8080:3000 --rm --name assignment04")
+                }
             }
         }
     }
