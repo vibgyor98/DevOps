@@ -58,13 +58,18 @@ pipeline {
             }
         } 
         stage('Build Image'){
-            steps{
+            steps {
                 bat "docker build -t souravkar/assignment04:${BUILD_NUMBER} ."
+            }
+        }
+        stage('Push Image') {
+            steps {
+
             }
         }
         stage('Docker Deployment'){
             steps{
-                bat "docker run --name souravkar/assignment04 -d -p 8080:3000 assignment04image:${BUILD_NUMBER}"
+                bat "docker run --name souravkar/assignment04 -d -p 8080:3000 souravkar/assignment04:${BUILD_NUMBER}"
             }
         }
     }
