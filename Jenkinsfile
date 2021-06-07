@@ -42,7 +42,7 @@ pipeline {
         stage("Upload to artifactory") {
             steps {
                 rtMavenDeployer (
-                    id: "deployer",
+                    id: "admin",
                     serverId: "artifactory-server",
                     releaseRepo: "Assignment04",
                     snapshotRepo: "Assignment04"
@@ -50,7 +50,7 @@ pipeline {
                 rtMavenRun (
                     pom: "pom.xml",
                     goals: "clean install",
-                    deployerId: "deployer"
+                    deployerId: "admin"
                 )
                 rtPublishBuildInfo (
                     serverId: "artifactory-server"
