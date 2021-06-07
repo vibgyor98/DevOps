@@ -62,14 +62,6 @@ pipeline {
                 bat "docker build -t souravkar/assignment04:${BUILD_NUMBER} ."
             }
         }
-        stage('Push Image') {
-            steps {
-                docker.withRegistry('https://registry.hub.docker.com', 'Docker-Credential') (
-                    app.push("${env.BUILD_NUMBER}"),
-                    app.push("latest")
-                )
-            }
-        }
         stage('Docker Deployment'){
             steps{
                 bat "docker run --name souravkar/assignment04 -d -p 8080:3000 assignment04image:${BUILD_NUMBER}"
